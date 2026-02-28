@@ -1,0 +1,22 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #0e0e10;
+}
+
+canvas {
+    width: 1024px;
+    height: 480px;
+
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}

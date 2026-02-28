@@ -1,7 +1,11 @@
 import { Settings } from "./settings.js";
 
-const LANES = [{y: 320, baseSpeed: 100}, {y: 360, baseSpeed: 90}, {y: 400, baseSpeed: 80}];
+const LANES = [{y: 360, baseSpeed: 100, gap: 500}, {y: 400, baseSpeed: 90, gap: 400}, {y: 440, baseSpeed: 80, gap: 300}];
 const SPEED_MULTIPLIER_INCREASE = 0.1;
+const CAR_TYPES = {
+    NORMAL_1: {path: "car_1.png"},
+    NORMAL_2: {path: "car_2.png"},
+};
 
 export class Cars {
     constructor(ctx) {
@@ -16,19 +20,33 @@ export class Cars {
     }
 
     async load() {
-        for (let i = 0; i < this.number_sprites; ++i) {
+        const types = Object.values(CAR_TYPES);
+        for (let i = 0; i < types.length; ++i) {
             const image = new Image();
-            image.src = `assets/car_${i+1}.png`;
+            image.src = `assets/${types[i].path}`;
             this.sprites[i] = image;
         }
-
     }
 
-    spawnCar(lane) {
-        this.cars.push({x: 1300, lane: lane});
+    spawnCar(lane, type) {
+        this.cars.push({x: Settings.SCR_WIDTH+100, lane: lane, type: type});
     }
 
     update(dt) {
+        for (let lane = 0; lane < LANES.length; ++lane) {
+            let distance = Infinity;
+            let searching = true;
+            let i = this.cars.length-1;
+            while (i >= 0 && searching) {
+                if (this.cars[i].lane == lane) {
+                    distance = Settings.SCR_WIDTH+100-this.cars[i].x;
+                    searching = false;
+                }
+                i--;
+            }
+            if (distance >= LANES[lane].gap + Math.floor(Math.random()*150)) this.spawnCar(lane);
+        }
+
         for (const car of this.cars) {
             car.x -= LANES[car.lane].baseSpeed * this.speedMultiplier * dt;
 

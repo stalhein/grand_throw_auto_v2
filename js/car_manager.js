@@ -1,7 +1,7 @@
 import { Settings } from "./settings.js";
 
 export const LANES = [{y: 360, baseSpeed: 150, gap: 1500}, {y: 400, baseSpeed: 100, gap: 700}, {y: 440, baseSpeed: 60, gap: 300}];
-const SPEED_MULTIPLIER_INCREASE = 0.05;
+const SPEED_MULTIPLIER_INCREASE = 0.15;
 const CAR_TYPES = [
     {type: "NORMAL_1", path: "car_1.png"},
     {type: "NORMAL_2", path: "car_2.png"},
@@ -26,6 +26,8 @@ export class CarManager {
             image.src = `assets/${CAR_TYPES[i].path}`;
             this.sprites[i] = image;
         }
+	this.cars = [];
+	this.speedMultiplier = 1;
     }
 
     spawnCar(lane) {
@@ -60,8 +62,9 @@ export class CarManager {
                 if (index == -1) continue;
                 this.cars.splice(index, 1);
 
-                if (car.type == CAR_TYPES[0]) dscore += 10;
-                else dscore += 50;
+                if (car.type.type == "NORMAL_1") dscore += 10;
+                else if (car.type.type == "NORMAL_2") dscore += 50;
+                else dscore += 100;
             }
 
             car.x -= LANES[car.lane].baseSpeed * this.speedMultiplier * dt;
@@ -71,7 +74,7 @@ export class CarManager {
                 if (index == -1) continue;
                 this.cars.splice(index, 1);
 
-                dscore -= 5;
+                dscore -= car.type.type == "POLICE" ? 0 : 5;
             }
         }
 

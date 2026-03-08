@@ -16,9 +16,11 @@ export class BrickManager {
     async initialize() {
         this.sprite1.src = "assets/brick1.png";
         this.sprite2.src = "assets/brick2.png";
+	this.bricks = [];
     }
 
     update(dt, cars) {
+        let ds = 0;
         for (const brick of this.bricks) {
             brick.speed += 9.81 * PIXELS_PER_METER * dt;
             brick.y += brick.speed * dt;
@@ -27,6 +29,12 @@ export class BrickManager {
                 const a = {x: car.x+3, y: LANES[car.lane].y+4, w: 56, h: 15};
                 const b = {x: brick.x, y: brick.y, w: 10, h: 20};
                 if (this.colliding(a, b)) {
+                    if (car.type.type == "POLICE" && brick.type == 0) {
+                        brick.speed = -brick.speed * 0.6;
+                        brick.y -= 20;
+                        ds -= 100;
+                        continue;
+                    }
                     car.hit = true;
 
                     const index = this.bricks.indexOf(brick);
@@ -41,6 +49,8 @@ export class BrickManager {
                 this.bricks.splice(index, 1);
             }
         }
+
+        return ds;
     }
 
     render() {
